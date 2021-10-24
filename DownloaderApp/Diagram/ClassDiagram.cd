@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="DownloaderApp.FTPManager">
+    <Position X="2" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAACAgAIAEAAAEgAgAAAgIAAAAAgA=</HashCode>
+      <FileName>FTPManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DownloaderApp.HTTPManager">
+    <Position X="4.75" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAACAAAAAAAIAAAAA=</HashCode>
+      <FileName>HTTPManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>
