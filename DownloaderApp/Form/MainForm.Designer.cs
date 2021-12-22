@@ -193,6 +193,8 @@ namespace DownloaderApp
             // anonymousCheck
             // 
             this.anonymousCheck.AutoSize = true;
+            this.anonymousCheck.Checked = true;
+            this.anonymousCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.anonymousCheck.Location = new System.Drawing.Point(89, 140);
             this.anonymousCheck.Name = "anonymousCheck";
             this.anonymousCheck.Size = new System.Drawing.Size(91, 19);
@@ -203,6 +205,7 @@ namespace DownloaderApp
             // 
             // pwText
             // 
+            this.pwText.Enabled = false;
             this.pwText.Location = new System.Drawing.Point(89, 110);
             this.pwText.Name = "pwText";
             this.pwText.PasswordChar = '*';
@@ -211,6 +214,7 @@ namespace DownloaderApp
             // 
             // idText
             // 
+            this.idText.Enabled = false;
             this.idText.Location = new System.Drawing.Point(89, 81);
             this.idText.Name = "idText";
             this.idText.Size = new System.Drawing.Size(400, 23);
