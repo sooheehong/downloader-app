@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace DownloaderApp
 {
+    public enum EDownloadType
+    {
+        None = 0,
+        Directory = 1,
+        File = 2
+    }
     internal class SubFiles
     {
         public List<string> Files { get; set; } = new List<string>();
@@ -54,7 +60,8 @@ namespace DownloaderApp
 
         public List<string> FtpDownload(string url, string localPath, bool isFirst = false)
         {
-            var isDirectory = true;
+            var sub = new SubFiles();
+            var downloadType = EDownloadType.Directory;
 
             // 처음(메인) 실행 시 일부 필드 초기화
             if (isFirst)
@@ -63,29 +70,53 @@ namespace DownloaderApp
                 saveFiles = new List<string>();
                 tasks = new List<Task>();
 
-                // 폴더가 아닌지 체크
-                if (url.LastIndexOf("/") != url.Length - 1)
+                downloadType = GetDownloadType(url);
+                if (downloadType == EDownloadType.None)
                 {
-                    isDirectory = false;
-                    // 폴더가 아닐 경우 폴더로 url 재설정
+                    throw new Exception("해당 경로의 파일(디렉토리)이 없습니다");
+                }
+                else if (downloadType == EDownloadType.Directory)
+                {
+                    if (url[url.Length - 1] != '/')
+                    {
+                        url += "/";
+                    }
+                    var split = url.Split("/");
+                    var name = split[split.Length - 2];
+                    localPath = Path.Combine(localPath, name);
+
+                    if (Directory.Exists(localPath))
+                    {
+                        Directory.Delete(localPath, true);
+                    }
+
+                    Directory.CreateDirectory(localPath);
+                }
+                else
+                {
+                    var split = url.Split("/");
+                    var name = split[split.Length - 1];
+
+                    // 다운로드 목록에 파일 추가 및 url 재설정
+                    sub.Files.Add(name);
                     url = url.Substring(0, url.LastIndexOf("/") + 1);
                 }
             }
 
-            SubFiles sub = GetSubFileList(url);
-
-            // 폴더라면 하위 폴더도 다운로드
-            if (isDirectory)
+            if (downloadType == EDownloadType.Directory)
             {
-                foreach (string item in sub.Directories)
+                sub = GetSubFileList(url);
+            }
+
+            // 하위 폴더 다운로드
+            foreach (string item in sub.Directories)
+            {
+                string newLocalPath = Path.Combine(localPath, item);
+                if (!Directory.Exists(newLocalPath))
                 {
-                    string newLocalPath = Path.Combine(localPath, item);
-                    if (!Directory.Exists(newLocalPath))
-                    {
-                        Directory.CreateDirectory(newLocalPath);
-                    }
-                    FtpDownload(url + item + "/", newLocalPath);
+                    Directory.CreateDirectory(newLocalPath);
                 }
+                FtpDownload(url + item + "/", newLocalPath);
             }
 
             // 파일 다운로드
@@ -101,6 +132,33 @@ namespace DownloaderApp
             }
 
             return saveFiles;
+        }
+
+        private EDownloadType GetDownloadType(string url)
+       {
+            FtpWebRequest request = WebRequest.Create(url) as FtpWebRequest;
+            request.Method = WebRequestMethods.Ftp.GetFileSize;
+            request.Credentials = new NetworkCredential(id, pw);
+
+            try
+            {
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    using (var responseStream = response.GetResponseStream())
+                    {
+                        return EDownloadType.File;
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                var response = (FtpWebResponse)ex.Response;
+                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                {
+                    return EDownloadType.None;
+                }
+                return EDownloadType.Directory;
+            }
         }
 
         private SubFiles GetSubFileList(string url)
@@ -134,6 +192,7 @@ namespace DownloaderApp
                     }
                 }
             }
+            
             return list;
         }
 

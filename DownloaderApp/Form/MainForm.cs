@@ -97,12 +97,12 @@ namespace DownloaderApp
                 }
                 else
                 {
-                    MessageBox.Show("완료! 다운로드 할 파일이 없습니다", "DownloaderApp");
+                    MessageBox.Show("다운로드 할 파일이 없습니다", "DownloaderApp");
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                ShowErrorMessage("다운로드에 실패하였습니다");
+                ShowErrorMessage("다운로드에 실패하였습니다.\n" + ex.Message);
             }
         }
 
