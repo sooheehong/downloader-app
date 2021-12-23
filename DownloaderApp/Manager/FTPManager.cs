@@ -155,7 +155,28 @@ namespace DownloaderApp
                 var response = (FtpWebResponse)ex.Response;
                 if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
                 {
-                    return EDownloadType.None;
+                    request = WebRequest.Create(url + "/") as FtpWebRequest;
+                    request.Method = WebRequestMethods.Ftp.GetFileSize;
+                    request.Credentials = new NetworkCredential(id, pw);
+
+                    try
+                    {
+                        using (response = (FtpWebResponse)request.GetResponse())
+                        {
+                            using (var responseStream = response.GetResponseStream())
+                            {
+                            }
+                        }
+                    }
+                    catch (WebException ex1)
+                    {
+                        var response1 = (FtpWebResponse)ex1.Response;
+                        if (response1.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                        {
+                            return EDownloadType.None;
+                        }
+                        return EDownloadType.Directory;
+                    }
                 }
                 return EDownloadType.Directory;
             }
